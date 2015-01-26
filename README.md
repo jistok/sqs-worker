@@ -24,3 +24,18 @@ type as well.
 web: vendor/bin/heroku-php-apache2
 worker: php vendor/bin/sqs_worker.php
 ```
+
+And finally, but most importantly, you need to define a custom buildpack for your app:
+
+```bash
+deis create <myapp> -b https://github.com/sforsman/heroku-buildpack-php.git
+
+# After the application has been created, bring the worker(s) upp with
+deis scale worker=1
+```
+
+Or if the app is already running
+
+```bash
+deis config:set BUILDPACK_URL=https://github.com/sforsman/heroku-buildpack-php.git
+```
