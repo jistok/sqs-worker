@@ -1,5 +1,23 @@
 {
+    "name": "sforsman/SQSWorker",
+    "description": "Amazon SQS background worker for PW",
+    "keywords": ["pw","processwire"],
+    "homepage": "http://github.com/sforsman/SQSWorker",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Sebastian Forsman",
+            "email": "sebastian.forsman@gmail.com",
+            "homepage": "http://github.com/sforsman"
+        }
+    ],
     "require": {
+        "php": ">=5.5.0",
         "aws/aws-sdk-php": "2.*"
-    }
+    },
+    "autoload": {
+        "psr-4": {"SQSWorker\\": "src/SQSWorker"}
+    },
+    "bin": ["bin/sqs_worker.php"]
 }
