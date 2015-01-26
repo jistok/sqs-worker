@@ -19,5 +19,5 @@
     "autoload": {
         "psr-4": {"SQSWorker\\": "src/SQSWorker"}
     },
-    "bin": ["bin/sqs_worker.php"]
+    "bin": ["bin/sqs_worker.php", "bin/pw_exec.php"]
 }
