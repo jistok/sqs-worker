@@ -37,19 +37,73 @@ $queueUrl = $queue->get('QueueUrl');
 
 $worker = new Worker($client, $queueUrl);
 
+// Just a dummy job
 $worker->teach("test", function($parameters = []) {
   echo "\t-> PW execution with parameters: " . json_encode($parameters) . "\n";
   sleep(5); // Simulate hard work
   // TODO: Acquire locks, check that the job has not been started and update so
 });
 
+// Meant for testing recovery
 $worker->teach("test_kill", function($parameters = []) {
   aadfg();
 });
 
-$worker->teach("dump_env", function($parameters = []) {
-  echo json_encode($_SERVER);
+// This is far from the actual executor, but useful for simple tests
+$worker->teach("pw_simple", function($parameters = []) {
+  $output = "";
+  $error = "";
+
+  $retval = proc_exec("php vendor/bin/pw_exec.php", json_encode($workload), $output, $error);
+
+  $haveOutput = false;
+  $failed = false;
+
+  if(strlen($output))
+    echo $output;
+  if(strlen($error))
+    file_put_contents("php://stderr", $error);
+
+  if($retval != 0)
+    file_put_contents("php://stderr", "\t-> Sub process failed with exit code {$retval}\n");
+  else
+    echo "\t-> OK!\n";
 });
 
-//Enter main loop
+// To peek on the env
+$worker->teach("dump_env", function($parameters = []) {
+  echo json_encode($_SERVER) . "\n";
+});
+
+// Enter main loop
 $worker->work();
+
+// Helper function for calling sub processes
+function proc_exec($cmd,$input,&$output = "",&$error = "",$cwd = false)
+{
+  $spec = array(
+    0 => array("pipe", "r"),
+    1 => array("pipe", "w"),
+    2 => array("pipe", "w"),
+  );
+
+  $process = proc_open($cmd,$spec,$pipes,$cwd);
+
+  if(!is_resource($process))
+  {
+    return 254;
+  }
+
+  fwrite($pipes[0], $input);
+  fclose($pipes[0]);
+
+  $output.= stream_get_contents($pipes[1]);
+  fclose($pipes[1]);
+
+  $error.= stream_get_contents($pipes[2]);
+  fclose($pipes[2]);
+
+  $retval = proc_close($process);
+
+  return $retval;
+}
