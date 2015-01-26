@@ -10,16 +10,32 @@ class Worker
 {
   protected $queue_url;
   protected $client;
+  protected $executors;
 
   public function __construct(SqsClient $client, $queue_url)
   {
     $this->client = $client;
     $this->queue_url = $queue_url;
+    $this->executors = [];
+  }
+
+  public function teach($name, $callback)
+  {
+    if(!is_callable($callback))
+      throw new \Exception("Invalid callback");
+
+    if(isset($this->executors[$name]))
+      throw new \Exception("Already know how to work with {$name}");
+
+    $this->executors[$name] = $callback;
   }
 
   // Main loop
-  public function Work()
+  public function work()
   {
+    if(!$this->executors)
+      throw new \Exception("I'd rather be educated first");
+
     echo "Worker started\n";
     $hadJob = true;
 
@@ -91,11 +107,16 @@ class Worker
           continue;
         }
 
-        $function = "executor_" . $data['Function'];
-        $callable = [$this,$function];
+        if(!isset($this->executors[$data['Function']]))
+        {
+          file_put_contents("php://stderr", "-> ERROR: I don't know how to handle {$data['Function']}");
+          continue;
+        }
+
+        $callable = $this->executors[$data['Function']];
         if(!is_callable($callable))
         {
-          file_put_contents("php://stderr", "-> ERROR: Invalid data, function is not callable\n");
+          file_put_contents("php://stderr", "-> ERROR: Function is not callable (anymore)\n");
           continue;
         }
 
@@ -114,15 +135,7 @@ class Worker
         } catch(\Exception $e) {
           file_put_contents("php://stderr", "-> ERROR: Executor threw an ".get_class($e). ": ".$e->getMessage()."\n");
         }
-      }   
+      }
     }
-  }
-
-  // TODO: Make these so that they can be registered outside
-  protected function executor_pw_generic($parameters = [])
-  {
-    echo "\t-> PW execution with parameters: " . json_encode($parameters) . "\n";
-    sleep(5); // Simulate hard work
-    // TODO: Acquire locks, check that the job has not been started and update so
   }
 }

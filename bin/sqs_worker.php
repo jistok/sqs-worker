@@ -1,5 +1,7 @@
 <?php
 
+// The PW worker
+
 require 'vendor/autoload.php';
 
 use SQSWorker\Worker;
@@ -34,4 +36,20 @@ $queue = $client->createQueue([
 $queueUrl = $queue->get('QueueUrl');
 
 $worker = new Worker($client, $queueUrl);
-$worker->work(); //Enter main loop
+
+$worker->teach("test", function($parameters = []) {
+  echo "\t-> PW execution with parameters: " . json_encode($parameters) . "\n";
+  sleep(5); // Simulate hard work
+  // TODO: Acquire locks, check that the job has not been started and update so
+});
+
+$worker->teach("test_kill", function($parameters = []) {
+  aadfg();
+});
+
+$worker->teach("dump_env", function($parameters = []) {
+  echo json_encode($_SERVER);
+});
+
+//Enter main loop
+$worker->work();
