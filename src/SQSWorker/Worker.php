@@ -20,7 +20,7 @@ class Worker
   // Main loop
   public function Work()
   {
-    echo date("c - ") . "Worker started\n";
+    echo "Worker started\n";
     $hadJob = true;
 
     // Main loop
@@ -29,7 +29,7 @@ class Worker
       try { 
         if($hadJob)
         {
-          echo date("c - ") . "Waiting for work\n";
+          echo "Waiting for work\n";
           $hadJob = false;
         }
         $result = $this->client->receiveMessage(array(
@@ -48,12 +48,12 @@ class Worker
         elseif(!isset($result['Messages']) or !is_array($result['Messages']) or !count($result['Messages']))
         {
           // Long poll timed out (...most likely... or at least hopefully)
-          // echo date("c - ") . "-> Timeout, polling again\n";
+          // echo "-> Timeout, polling again\n";
           continue;
         }
       } catch (\Exception $e) {
         // Just rethrow to see what comes
-        file_put_contents("php://stderr", date("c - ") . "-> FATAL: Message receive failed, worker dying on ".get_class($e). ": ".$e->getMessage()."\n");
+        file_put_contents("php://stderr", "-> FATAL: Message receive failed, worker dying on ".get_class($e). ": ".$e->getMessage()."\n");
         exit(1);
       }
 
@@ -65,7 +65,7 @@ class Worker
         $body = $message['Body'];
         $handle = $message['ReceiptHandle'];
 
-        echo date("c - ") . "-> Picked up message: {$message['MessageId']}\n";
+        echo "-> Picked up message: {$message['MessageId']}\n";
 
         // Delete straight away to avoid retry. If execution fails we have other ways
         try {
@@ -74,20 +74,20 @@ class Worker
               'ReceiptHandle' => $handle,
           ]);
         } catch(\Exception $e) {
-          file_put_contents("php://stderr", date("c - ") . "-> FATAL: Message deletion failed, worker dying on ".get_class($e). ": ".$e->getMessage()."\n");
+          file_put_contents("php://stderr", "-> FATAL: Message deletion failed, worker dying on ".get_class($e). ": ".$e->getMessage()."\n");
           exit(2);
         }
 
         $data = json_decode($body, true);
         if(!$data)
         {
-          file_put_contents("php://stderr", date("c - ") . "-> ERROR: Invalid data, json_decode failed\n");
+          file_put_contents("php://stderr", "-> ERROR: Invalid data, json_decode failed\n");
           continue;
         }
 
         if(!isset($data['Function']))
         {
-          file_put_contents("php://stderr", date("c - ") . "-> ERROR: Invalid data, no function defined\n");
+          file_put_contents("php://stderr", "-> ERROR: Invalid data, no function defined\n");
           continue;
         }
 
@@ -95,7 +95,7 @@ class Worker
         $callable = [$this,$function];
         if(!is_callable($callable))
         {
-          file_put_contents("php://stderr", date("c - ") . "-> ERROR: Invalid data, function is not callable\n");
+          file_put_contents("php://stderr", "-> ERROR: Invalid data, function is not callable\n");
           continue;
         }
 
@@ -103,16 +103,16 @@ class Worker
 
         if(!is_array($parms))
         {
-          file_put_contents("php://stderr", date("c - ") . "-> ERROR: Parameters must be an array\n");
+          file_put_contents("php://stderr", "-> ERROR: Parameters must be an array\n");
           continue;
         }
 
         // We don't care about the return value
-        echo date("c - ") . "-> Executing {$data['Function']}\n";
+        echo "-> Executing {$data['Function']}\n";
         try {
           call_user_func($callable, $parms);
         } catch(\Exception $e) {
-          file_put_contents("php://stderr", date("c - ") . "-> ERROR: Executor threw an ".get_class($e). ": ".$e->getMessage()."\n");
+          file_put_contents("php://stderr", "-> ERROR: Executor threw an ".get_class($e). ": ".$e->getMessage()."\n");
         }
       }   
     }
@@ -121,7 +121,7 @@ class Worker
   // TODO: Make these so that they can be registered outside
   protected function executor_pw_generic($parameters = [])
   {
-    echo date("c - ") . "\t-> PW execution with parameters: " . json_encode($parameters) . "\n";
+    echo "\t-> PW execution with parameters: " . json_encode($parameters) . "\n";
     sleep(5); // Simulate hard work
     // TODO: Acquire locks, check that the job has not been started and update so
   }
