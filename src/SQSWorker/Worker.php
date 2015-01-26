@@ -17,6 +17,7 @@ class Worker
     $this->client = $client;
     $this->queue_url = $queue_url;
     $this->executors = [];
+    echo "Worker waking up\n";
   }
 
   public function teach($name, $callback)
@@ -28,6 +29,7 @@ class Worker
       throw new \Exception("Already know how to work with {$name}");
 
     $this->executors[$name] = $callback;
+    echo "-> Learned {$name}\n";
   }
 
   // Main loop
@@ -36,7 +38,6 @@ class Worker
     if(!$this->executors)
       throw new \Exception("I'd rather be educated first");
 
-    echo "Worker started\n";
     $hadJob = true;
 
     // Main loop
