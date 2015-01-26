@@ -29,13 +29,16 @@ And finally, but most importantly, you need to define a custom buildpack for you
 
 ```bash
 deis create <myapp> -b https://github.com/sforsman/heroku-buildpack-php.git
-
-# After the application has been created, bring the worker(s) upp with
-deis scale worker=1
 ```
 
 Or if the app is already running
 
 ```bash
 deis config:set BUILDPACK_URL=https://github.com/sforsman/heroku-buildpack-php.git
+```
+
+If you added workers for the first time, bring them up with
+
+```bash
+deis scale worker=1
 ```
