@@ -1,6 +1,6 @@
 <?php
 
-// Make sure nothing is printed by default
+// Make sure nothing is printed by default so we don't get double errors
 error_reporting(0);
 ini_set("display_errors", false);
 
@@ -32,11 +32,11 @@ if(!isset($workload['module']) or !isset($workload['method']))
   exit(3);
 }
 
-echo "Executing {$workload['module']}::{$workload['method']}\n";
-
 try {
   // Boot PW
   require 'index.php';
+
+  echo "Executing {$workload['module']}::{$workload['method']}\n";
 
   // Make sure nothing is still not printed
   error_reporting(0);
