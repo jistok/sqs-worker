@@ -25,6 +25,12 @@ web: vendor/bin/heroku-php-apache2
 worker: php vendor/bin/sqs_worker.php
 ```
 
+Then you need these new environment values
+
+```bash
+deis config:set AWS_REGION=<region> AWS_ACCESS_KEY_ID=<access_key> AWS_SECRET_ACCESS_KEY=<secret>
+```
+
 And finally, but most importantly, you need to define a custom buildpack for your app:
 
 ```bash
