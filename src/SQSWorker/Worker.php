@@ -92,7 +92,8 @@ class Worker
         }
 
         $function = "executor_" . $data['Function'];
-        if(!is_callable([$this,$function]))
+        $callable = [$this,$function];
+        if(!is_callable($callable))
         {
           file_put_contents("php://stderr", date("c - ") . "-> ERROR: Invalid data, function is not callable\n");
           continue;
@@ -109,7 +110,7 @@ class Worker
         // We don't care about the return value
         echo date("c - ") . "-> Executing {$data['Function']}\n";
         try {
-          $function($parms);
+          call_user_func($callable, $parms);
         } catch(\Exception $e) {
           file_put_contents("php://stderr", date("c - ") . "-> ERROR: Executor threw an ".get_class($e). ": ".$e->getMessage()."\n");
         }
@@ -117,9 +118,11 @@ class Worker
     }
   }
 
+  // TODO: Make these so that they can be registered outside
   protected function executor_pw_generic($parameters = [])
   {
     echo date("c - ") . "\t-> PW execution with parameters: " . json_encode($parameters) . "\n";
     sleep(5); // Simulate hard work
+    // TODO: Acquire locks, check that the job has not been started and update so
   }
 }

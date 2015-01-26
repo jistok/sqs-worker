@@ -3,6 +3,7 @@
 require 'vendor/autoload.php';
 
 use SQSWorker\Worker;
+use Aws\Sqs\SqsClient;
 
 // TODO: Add monolog stuff, then disable these
 error_reporting(E_ALL);
