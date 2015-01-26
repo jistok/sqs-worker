@@ -54,7 +54,7 @@ $worker->teach("pw_simple", function($parameters = []) {
   $output = "";
   $error = "";
 
-  $retval = proc_exec("php vendor/bin/pw_exec.php", json_encode($workload), $output, $error);
+  $retval = proc_exec("php vendor/bin/pw_exec.php", json_encode($parameters), $output, $error);
 
   $haveOutput = false;
   $failed = false;
