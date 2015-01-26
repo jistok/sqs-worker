@@ -39,7 +39,7 @@ $worker = new Worker($client, $queueUrl);
 
 // Just a dummy job
 $worker->teach("test", function($parameters = []) {
-  echo "\t-> PW execution with parameters: " . json_encode($parameters) . "\n";
+  echo "-> PW execution with parameters: " . json_encode($parameters) . "\n";
   sleep(5); // Simulate hard work
   // TODO: Acquire locks, check that the job has not been started and update so
 });
@@ -65,9 +65,9 @@ $worker->teach("pw_simple", function($parameters = []) {
     file_put_contents("php://stderr", $error);
 
   if($retval != 0)
-    file_put_contents("php://stderr", "\t-> Sub process failed with exit code {$retval}\n");
+    file_put_contents("php://stderr", "-> Sub process failed with exit code {$retval}\n");
   else
-    echo "\t-> OK!\n";
+    echo "-> OK!\n";
 });
 
 // To peek on the env
