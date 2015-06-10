@@ -132,7 +132,8 @@ class Worker
         // We don't care about the return value
         echo "-> Executing {$data['Function']}\n";
         try {
-          call_user_func($callable, $parms);
+          unset($data['Function'], $data['Parameters']);
+          call_user_func($callable, $parms, $data);
         } catch(\Exception $e) {
           file_put_contents("php://stderr", "-> ERROR: Executor threw an ".get_class($e). ": ".$e->getMessage()."\n");
         }
