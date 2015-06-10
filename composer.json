@@ -1,8 +1,8 @@
 {
-    "name": "sforsman/SQSWorker",
+    "name": "sforsman/sqs-worker",
     "description": "Amazon SQS background worker for PW",
     "keywords": ["pw","processwire", "worker", "sqs", "queue"],
-    "homepage": "http://github.com/sforsman/SQSWorker",
+    "homepage": "http://github.com/sforsman/sqs-worker",
     "type": "library",
     "license": "MIT",
     "authors": [
