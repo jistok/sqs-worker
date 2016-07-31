@@ -11,13 +11,11 @@ class Worker
   protected $queue_url;
   protected $client;
   protected $executors;
-  protected $mysqli;
 
-  public function __construct(SqsClient $client, $queue_url, $mysqli)
+  public function __construct(SqsClient $client, $queue_url)
   {
     $this->client = $client;
     $this->queue_url = $queue_url;
-    $this->mysqli = $mysqli;
     $this->executors = [];
     echo "Worker waking up\n";
   }
