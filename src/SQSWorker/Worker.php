@@ -85,6 +85,8 @@ class Worker
         echo "-> Picked up message: {$message['MessageId']}\n";
 
         // Delete straight away to avoid retry. If execution fails we have other ways
+        /*
+        DONT DELETE RIGHT AWAY
         try {
           $this->client->deleteMessage([
               'QueueUrl'      => $this->queue_url,
@@ -94,6 +96,7 @@ class Worker
           file_put_contents("php://stderr", "-> FATAL: Message deletion failed, worker dying on ".get_class($e). ": ".$e->getMessage()."\n");
           exit(2);
         }
+        */
 
         $data = json_decode($body, true);
         if(!$data)
