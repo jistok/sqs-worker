@@ -96,7 +96,6 @@ class Worker
                 {
                     file_put_contents("php://stderr", "-> ERROR: Invalid data, no function defined - using default\n");
                     $data['Function'] = 'default';
-                    continue;
                 }
 
                 if(!isset($this->executors[$data['Function']]))
